@@ -6,7 +6,7 @@ module.exports.addCard = (req, res) => {
     .then((card) => {
       Card.findById(card._id)
         .populate('owner')
-        .then((data) => res.send(data))
+        .then((data) => res.status(201).send(data))
         .catch(() => res.status(404).send({ message: 'Карточки с таким id нет' }));
     // res.send(card);
     })
