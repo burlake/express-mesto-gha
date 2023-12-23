@@ -9,16 +9,16 @@ module.exports.getUsers = (req, res) => {
 module.exports.getUserById = (req, res) => {
   if (req.params.userId.length === 24) {
     User.findById(req.params.userId)
-    .then((user) => {
-      if (!user) {
-        res.status(404).send({message: 'Произошла ошибка. Пользователь с id не найден'});
-        return;
-      }
-      res.send(user);
-    })
-    .catch(() => res.status(404).send({message: 'Произошла ошибка. Пользователь с id не найден'}));
+      .then((user) => {
+        if (!user) {
+          res.status(404).send({ message: 'Произошла ошибка. Пользователь с id не найден' });
+          return;
+        }
+        res.send(user);
+      })
+      .catch(() => res.status(404).send({ message: 'Произошла ошибка. Пользователь с id не найден' }));
   } else {
-    res.status(400).send({message: 'Произошла ошибка. id некорректный'});
+    res.status(400).send({ message: 'Произошла ошибка. id некорректный' });
   }
 };
 
@@ -38,15 +38,15 @@ module.exports.addUser = (req, res) => {
 module.exports.editUserData = (req, res) => {
   const { name, about } = req.body;
   if (req.user._id) {
-    User.findByIdAndUpdate (req.user._id, { name, about }, { new: 'true', runValidators: true})
-    .then ((user) => res.send(user))
-    .catch ((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send ({ message: err.message });
-      } else {
-        res.status(404).send ({message: 'Произошла ошибка. Пользователь с id не найден'});
-      }
-    });
+    User.findByIdAndUpdate(req.user._id, { name, about }, { new: 'true', runValidators: true })
+      .then((user) => res.send(user))
+      .catch((err) => {
+        if (err.name === 'ValidationError') {
+          res.status(400).send({ message: err.message });
+        } else {
+          res.status(404).send({ message: 'Произошла ошибка. Пользователь с id не найден' });
+        }
+      });
   } else {
     res.status(500).send({ message: 'На сервере произошла ошибка' });
   }
@@ -54,15 +54,15 @@ module.exports.editUserData = (req, res) => {
 
 module.exports.editUserAvatar = (req, res) => {
   if (req.user._id) {
-    User.findByIdAndUpdate(req.user._id, {avatar: req.body.avatar}, {new: 'true', runValidators: true})
-    .then((user) => res.send(user))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400).send ({message: err.message});
-      } else {
-        res.status(404).send ({ message: 'Произошла ошибка. Пользователь с id не найден' });
-      }
-    });
+    User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar }, { new: 'true', runValidators: true })
+      .then((user) => res.send(user))
+      .catch((err) => {
+        if (err.name === 'ValidationError') {
+          res.status(400).send({ message: err.message });
+        } else {
+          res.status(404).send({ message: 'Произошла ошибка. Пользователь с id не найден' });
+        }
+      });
   } else {
     res.status(500).send({ message: 'На сервере произошла ошибка' });
   }

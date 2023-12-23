@@ -9,7 +9,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-//app.use(express.static())
+// app.use(express.static())
 
 mongoose.connect(DB_URL, {
   useNewUrlParser: true,
@@ -18,7 +18,7 @@ mongoose.connect(DB_URL, {
 
 app.use((req, res, next) => {
   req.user = {
-    _id: '6585b075c024508fac5a6bac' // вставьте сюда _id созданного в предыдущем пункте пользователя
+    _id: '6585b075c024508fac5a6bac', // вставьте сюда _id созданного в предыдущем пункте пользователя
   };
 
   next();
@@ -29,6 +29,4 @@ app.use('/cards', require('./routes/cards'));
 
 app.use(router);
 
-app.listen(PORT, () => {
-  console.log(`App listening on port ${PORT}`);
-});
+app.listen(PORT);

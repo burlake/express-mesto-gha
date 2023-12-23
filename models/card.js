@@ -5,16 +5,16 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: {
       value: true,
-      message: 'Поле является обязательным'
+      message: 'Поле является обязательным',
     },
     minlength: [2, 'Минимальная длинна 2 символа'],
-    maxlength: [30, 'Максимальная длинна 30 символ']
+    maxlength: [30, 'Максимальная длинна 30 символ'],
   },
   link: {
     type: String,
     required: {
       value: true,
-      message: 'Поле является обязательным'
+      message: 'Поле является обязательным',
     },
     validate: {
       validator(v) {
@@ -27,7 +27,7 @@ const cardSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     required: {
       value: true,
-      message: 'Поле является обязательным'
+      message: 'Поле является обязательным',
     },
     ref: 'user',
   },
