@@ -62,18 +62,19 @@ module.exports.likeCard = (req, res) => {
 };
 
 module.exports.dislikeCard = (req, res) => {
-  if (req.params.cardId.length === 24) {
-    Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
-      .populate(['owner', 'likes'])
-      .then((card) => {
-        if (!card) {
-          res.status(404).send({ message: 'Карточки с таким id нет' });
-          return;
-        }
-        res.send(card);
-      })
-      .catch(() => res.status(500).send({ message: 'Карточки с таким id нет' }));
-  } else {
-    res.status(400).send({ message: 'Неверный id карточки' });
-  }
+  Card.findByIdAndUpdate(req.params.cardId, { $pull: { likes: req.user._id } }, { new: true })
+    .orFail()
+    .populate(['owner', 'likes'])
+    .then((card) => {
+      res.status(200).send(card);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Некорректный _id карточки - 400' });
+      } else if (err.name === 'DocumentNotFoundError') {
+        res.status(404).send({ message: 'Карточка с _id не найдена - 404' });
+      } else {
+        res.status(500).send({ message: 'Произошла непредвиденная ошибка на сервере - 500' });
+      }
+    });
 };
