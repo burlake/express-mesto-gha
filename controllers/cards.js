@@ -27,20 +27,36 @@ module.exports.getCards = (req, res) => {
 };
 
 module.exports.deleteCard = (req, res) => {
-  if (req.params.cardId.length === 24) {
-    Card.findByIdAndDelete(req.params.cardId) // TypeError: Card.findByIdAndRemove is not a function
-      .then((card) => {
-        if (!card) {
-          res.status(404).send({ message: 'Карточки с таким id нет' }); // не работает
-          return;
-        }
-        res.send({ message: 'Карточка удалена' }); // не работает
-      })
-      .catch(() => res.status(500).send({ message: 'Карточки с таким id нет' })); // не работает
-  } else {
-    res.status(400).send({ message: 'Неверный id карточки' }); // работает
-  }
+  Card.findByIdAndDelete(req.params.cardId)
+    .orFail()
+    .then((card) => {
+      res.status(200).send(card); // работает - выдает карточку
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Удаление карточки с некорректным id - 400' });
+      } else if (err.name === 'DocumentNotFoundError') {
+        res.status(404).send({ message: 'Получение пользователя с несуществующим в БД id - 404.' });
+      } else {
+        res.status(500).send({ message: 'Произошла непредвиденная ошибка на сервере - 500' });
+        return;
+      }
+      res.send({ message: 'Карточка удалена' });
+    });
 };
+
+// .catch((err) => {
+//   if (err.name === 'CastError') {
+//     res.status(400).send({ message: 'Получение пользователя с некорректным id.' });
+//   } else if (err.name === 'DocumentNotFoundError') {
+//     res.status(404).send({ message: 'Получение несуществующим в БД id - 404.' });
+//   } else {
+//     res.status(500).send({ message: 'Произошла непредвиденная ошибка на сервере - 500' });
+//     return;
+//   }
+//   res.send({ message: 'Карточка удалена' });
+// });
+// };
 
 module.exports.likeCard = (req, res) => {
   if (req.params.cardId.length === 24) {

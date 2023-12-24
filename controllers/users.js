@@ -27,16 +27,6 @@ module.exports.getUserById = (req, res) => {
 // CastError должен обрабатываться в catch и возвращать 400.
 // В случае если ошибка непредвиденная, надо возвращать 500
 
-// .catch((err) => {
-//   if (err.name === 'CastError') {
-//     res.status(400).send({ message: 'Некорректный _id' }); // мало или много символов
-//   } else if (err.name === 'notFoundError') {
-//     res.status(404).send({ message: 'Пользователь с такми _id не найден' }); //
-//   } else {
-//     res.status(500).send({ message: 'Произошла ошибка на сервере.' });
-//   }
-// });
-
 module.exports.addUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
@@ -55,10 +45,10 @@ module.exports.editUserData = (req, res) => {
   if (req.user._id) {
     User.findByIdAndUpdate(req.user._id, { name, about }, { new: 'true', runValidators: true })
       .orFail()
-      .then((user) => res.send(user))
+      .then((user) => res.status(200).send(user)) // работает - 200
       .catch((err) => {
         if (err.name === 'ValidationError') {
-          res.status(400).send({ message: err.message });
+          res.status(400).send({ message: err.message }); // 2 и 31 сим работает - 400
         } else {
           res.status(500).send({ message: 'Произошла ошибка. Пользователь с id не найден' });
         }
