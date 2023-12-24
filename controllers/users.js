@@ -8,15 +8,15 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
-    .orFail((new Error('CastError')))
+    .orFail((new Error('notFoundError')))
     .then((user) => {
       res.status(200).send(user);
     })
-    .catch((err) => {
-      if (err.message === 'CastError') {
+    .catch((err) => { // if (err.name == 'CastError') {
+      if (err.message === 'notFoundError') {
         res.status(404).send({ message: 'Произошла ошибка. Пользователь с id не найден' });
       } else {
-        res.status(400).send({ message: 'Произошла ошибка.' });
+        res.status(500).send({ message: 'Произошла ошибка.' });
       }
     });
 };
@@ -24,8 +24,8 @@ module.exports.getUserById = (req, res) => {
 module.exports.addUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then((user) => res.status(201).send(user)) // возвращаем записанные в базу данные пользователю
-    .catch((err) => { // если данные не записались, вернём ошибку
+    .then((user) => res.status(201).send(user))
+    .catch((err) => {
       if (err.name === 'ValidationError') {
         res.status(400).send({ message: err.message });
       } else {
