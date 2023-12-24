@@ -8,17 +8,28 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
-    .orFail((new Error('notFoundError')))
-    .then((user) => {
-      res.status(200).send(user);
+    .orFail((err) => {
+      if (err.name === 'notFoundError') {
+        res.status(404).send({ message: 'Пользователь с такми _id не найден' });
+      }
     })
+    .then((user) => {
+      res.status(200).send(user); // работает - выдает карточку
+    })
+    // .catch((err) => {
+    //   if (err.name === 'CastError') {
+    //     res.status(400).send({ message: 'Некорректный _id' }); // мало или много символов
+    //   } else if (err.name === 'notFoundError') {
+    //     res.status(404).send({ message: 'Пользователь с такми _id не найден' }); //
+    //   } else {
+    //     res.status(500).send({ message: 'Произошла ошибка на сервере.' });
+    //   }
+    // });
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Некорректный _id' });
-      } else if (err.name === 'notFoundError') {
-        res.status(404).send({ message: 'Пользователь с такми _id не найден' });
+        res.status(500).send({ message: 'Произошла непредвиденная ошибка на сервере.' }); // мало или много символов - 500
       } else {
-        res.status(500).send({ message: 'Произошла непредвиденная ошибка на сервере.' });
+        res.status(400).send({ message: 'Некорректный _id.' });// меняю цифру 1 цифру (24 символа)
       }
     });
 };
