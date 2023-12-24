@@ -34,7 +34,7 @@ module.exports.deleteCard = (req, res) => {
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Некорректный _id карточки - 400' }); // работает
+        res.status(400).send({ message: 'Некорректный _id карточки - 400' });
       } else if (err.name === 'DocumentNotFoundError') {
         res.status(404).send({ message: 'Карточка с _id не найдена - 404' });
       } else {
@@ -43,39 +43,22 @@ module.exports.deleteCard = (req, res) => {
     });
 };
 
-// orFail должен возвращать 404, то есть notFound,
-// CastError должен обрабатываться в catch и возвращать 400.
-// В случае если ошибка непредвиденная, надо возвращать 500
-// 404 должна выполняться в блоках orFail или then
-
-// .catch((err) => {
-//   if (err.name === 'CastError') {
-//     res.status(400).send({ message: 'Получение пользователя с некорректным id.' });
-//   } else if (err.name === 'DocumentNotFoundError') {
-//     res.status(404).send({ message: 'Получение несуществующим в БД id - 404.' });
-//   } else {
-//     res.status(500).send({ message: 'Произошла непредвиденная ошибка на сервере - 500' });
-//     return;
-//   }
-//   res.send({ message: 'Карточка удалена' });
-// });
-// };
-
 module.exports.likeCard = (req, res) => {
-  if (req.params.cardId.length === 24) {
-    Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
-      .populate(['owner', 'likes'])
-      .then((card) => {
-        if (!card) {
-          res.status(404).send({ message: 'Карточки с таким id нет' });
-          return;
-        }
-        res.send(card);
-      })
-      .catch(() => res.status(500).send({ message: 'Карточки с таким id нет' }));
-  } else {
-    res.status(400).send({ message: 'Неверный id карточки' });
-  }
+  Card.findByIdAndUpdate(req.params.cardId, { $addToSet: { likes: req.user._id } }, { new: true })
+    .orFail()
+    .populate(['owner', 'likes'])
+    .then((card) => {
+      res.status(200).send(card);
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Некорректный _id карточки - 400' });
+      } else if (err.name === 'DocumentNotFoundError') {
+        res.status(404).send({ message: 'Карточка с _id не найдена - 404' });
+      } else {
+        res.status(500).send({ message: 'Произошла непредвиденная ошибка на сервере - 500' });
+      }
+    });
 };
 
 module.exports.dislikeCard = (req, res) => {
