@@ -30,20 +30,25 @@ module.exports.deleteCard = (req, res) => {
   Card.findByIdAndDelete(req.params.cardId)
     .orFail()
     .then((card) => {
-      res.status(200).send(card); // работает - выдает карточку
-    })
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Удаление карточки с некорректным id - 400' });
-      } else if (err.name === 'DocumentNotFoundError') {
+      if (!card) {
         res.status(404).send({ message: 'Получение пользователя с несуществующим в БД id - 404.' });
-      } else {
-        res.status(500).send({ message: 'Произошла непредвиденная ошибка на сервере - 500' });
         return;
       }
       res.send({ message: 'Карточка удалена' });
+    })
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Удаление карточки с некорректным id - 400' }); // работает
+      } else {
+        res.status(500).send({ message: 'Произошла непредвиденная ошибка на сервере - 500' });
+      }
     });
 };
+
+// orFail должен возвращать 404, то есть notFound,
+// CastError должен обрабатываться в catch и возвращать 400.
+// В случае если ошибка непредвиденная, надо возвращать 500
+// 404 должна выполняться в блоках orFail или then
 
 // .catch((err) => {
 //   if (err.name === 'CastError') {
