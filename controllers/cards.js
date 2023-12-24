@@ -29,16 +29,14 @@ module.exports.getCards = (req, res) => {
 module.exports.deleteCard = (req, res) => {
   Card.findByIdAndDelete(req.params.cardId)
     .orFail()
-    .then((card) => {
-      if (!card) {
-        res.status(404).send({ message: 'Получение пользователя с несуществующим в БД id - 404.' });
-        return;
-      }
-      res.send({ message: 'Карточка удалена' });
+    .then(() => {
+      res.status(200).send({ message: 'Карточка удалена' });
     })
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Удаление карточки с некорректным id - 400' }); // работает
+        res.status(400).send({ message: 'Некорректный _id карточки - 400' }); // работает
+      } else if (err.name === 'DocumentNotFoundError') {
+        res.status(404).send({ message: 'Карточка с _id не найдена - 404' });
       } else {
         res.status(500).send({ message: 'Произошла непредвиденная ошибка на сервере - 500' });
       }
