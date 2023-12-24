@@ -8,28 +8,17 @@ module.exports.getUsers = (req, res) => {
 
 module.exports.getUserById = (req, res) => {
   User.findById(req.params.userId)
-    .orFail((err) => {
-      if (err.name === 'notFoundError') {
-        res.status(404).send({ message: 'Пользователь с такми _id не найден' });
-      }
-    })
+    .orFail()
     .then((user) => {
       res.status(200).send(user); // работает - выдает карточку
     })
-    // .catch((err) => {
-    //   if (err.name === 'CastError') {
-    //     res.status(400).send({ message: 'Некорректный _id' }); // мало или много символов
-    //   } else if (err.name === 'notFoundError') {
-    //     res.status(404).send({ message: 'Пользователь с такми _id не найден' }); //
-    //   } else {
-    //     res.status(500).send({ message: 'Произошла ошибка на сервере.' });
-    //   }
-    // });
     .catch((err) => {
       if (err.name === 'CastError') {
-        res.status(500).send({ message: 'Произошла непредвиденная ошибка на сервере.' }); // мало или много символов - 500
+        res.status(400).send({ message: 'Получение пользователя с некорректным id - 400.' }); // работает
+      } else if (err.name === 'DocumentNotFoundError') {
+        res.status(404).send({ message: 'Получение пользователя с несуществующим в БД id - 404.' });// меняю цифру 1 цифру (24 символа)
       } else {
-        res.status(400).send({ message: 'Некорректный _id.' });// меняю цифру 1 цифру (24 символа)
+        res.status(500).send({ message: 'Произошла непредвиденная ошибка на сервере - 500' });
       }
     });
 };
@@ -37,6 +26,16 @@ module.exports.getUserById = (req, res) => {
 // orFail должен возвращать 404, то есть notFound,
 // CastError должен обрабатываться в catch и возвращать 400.
 // В случае если ошибка непредвиденная, надо возвращать 500
+
+// .catch((err) => {
+//   if (err.name === 'CastError') {
+//     res.status(400).send({ message: 'Некорректный _id' }); // мало или много символов
+//   } else if (err.name === 'notFoundError') {
+//     res.status(404).send({ message: 'Пользователь с такми _id не найден' }); //
+//   } else {
+//     res.status(500).send({ message: 'Произошла ошибка на сервере.' });
+//   }
+// });
 
 module.exports.addUser = (req, res) => {
   const { name, about, avatar } = req.body;
