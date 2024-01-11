@@ -1,3 +1,5 @@
+const NotFoundError = require('../errors/NotFoundError');
+const BadRequestError = require('../errors/badRequestError');
 const User = require('../models/user');
 
 module.exports.getUsers = (req, res) => {
@@ -10,15 +12,15 @@ module.exports.getUserById = (req, res, next) => {
   User.findById(req.params.userId)
     .orFail()
     .then((user) => {
-      res.status(200).send(user); // работает - выдает карточку
+      res.status(httpConstants.HTTP_STATUS_OK).send(user); // работает - выдает карточку
     })
     .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400).send({ message: 'Получение пользователя с некорректным id - 400.' }); // работает
-      } else if (err.name === 'DocumentNotFoundError') {
-        res.status(404).send({ message: 'Получение пользователя с несуществующим в БД id - 404.' });// меняю цифру 1 цифру (24 символа)
+      if (err instanceof mongoose.Error.CastError) {
+        next(new BadRequestError(`Некорректный _id: ${req.params.userId}`)); // работает
+      } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        next (new NotFoundError (`Пользователь по указанному _id: ${req.params.userId} не найден`));// меняю цифру 1 цифру (24 символа)
       } else {
-        res.status(500).send({ message: 'Произошла непредвиденная ошибка на сервере - 500' });
+        next(err);
       }
     });
 };
