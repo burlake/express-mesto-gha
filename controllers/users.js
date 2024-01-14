@@ -1,11 +1,11 @@
-const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/badRequestError');
+const User = require('../models/user');
 
 module.exports.getUsers = (req, res) => {
   User.find({})
-    .then((users) => res.status(httpConstants.HTTP_STATUS_OK).send(users))
-    .catch(() => res.status(httpConstants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' }));
+    .then((users) => res.send(users))
+    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
 };
 
 module.exports.getUserById = (req, res, next) => {
@@ -32,12 +32,12 @@ module.exports.getUserById = (req, res, next) => {
 module.exports.addUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then((user) => res.status(httpConstants.HTTP_STATUS_CREATED).send(user)) // возвращаем записанные в базу данные пользователю
+    .then((user) => res.status(201).send(user)) // возвращаем записанные в базу данные пользователю
     .catch((err) => { // если данные не записались, вернём ошибку
-      if (err instanceof mongoose.Error.ValidationError) {
-        res.status(httpConstants.HTTP_STATUS_BAD_REQUEST).send({ message: err.message });
+      if (err.name === 'ValidationError') {
+        res.status(400).send({ message: err.message });
       } else {
-        res.status(httpConstants.HTTP_STATUS_INTERNAL_SERVER_ERROR).send({ message: 'На сервере произошла ошибка' });
+        res.status(500).send({ message: 'На сервере произошла ошибка' });
       }
     });
 };
