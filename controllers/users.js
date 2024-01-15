@@ -1,11 +1,13 @@
+const httpConstants = require('http2').constants;
+const mongoose = require('mongoose');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/badRequestError');
 const User = require('../models/user');
 
-module.exports.getUsers = (req, res) => {
+module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.send(users))
-    .catch(() => res.status(500).send({ message: 'На сервере произошла ошибка' }));
+    .then((users) => res.status(httpConstants.HTTP_STATUS_OK).send(users))
+    .catch(next);
 };
 
 module.exports.getUserById = (req, res, next) => {
@@ -29,50 +31,50 @@ module.exports.getUserById = (req, res, next) => {
 // CastError должен обрабатываться в catch и возвращать 400.
 // В случае если ошибка непредвиденная, надо возвращать 500
 
-module.exports.addUser = (req, res) => {
+module.exports.addUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then((user) => res.status(201).send(user)) // возвращаем записанные в базу данные пользователю
-    .catch((err) => { // если данные не записались, вернём ошибку
-      if (err.name === 'ValidationError') {
-        res.status(400).send({ message: err.message });
+  .then((user) => {
+    res.status(httpConstants.HTTP_STATUS_CREATED).send(user);
+  })
+    .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        next(new BadRequestError(err.message));
       } else {
-        res.status(500).send({ message: 'На сервере произошла ошибка' });
+        next(err);
       }
     });
 };
 
-module.exports.editUserData = (req, res) => {
+module.exports.editUserData = (req, res, next) => {
   const { name, about } = req.body;
-  if (req.user._id) {
-    User.findByIdAndUpdate(req.user._id, { name, about }, { new: 'true', runValidators: true })
-      .orFail()
-      .then((user) => res.status(200).send(user)) // работает - 200
-      .catch((err) => {
-        if (err.name === 'ValidationError') {
-          res.status(400).send({ message: err.message }); // 2 и 31 сим работает - 400
-        } else {
-          res.status(500).send({ message: 'Произошла ошибка. Пользователь с id не найден' });
-        }
-      });
-  } else {
-    res.status(500).send({ message: 'На сервере произошла ошибка' });
-  }
+  User.findByIdAndUpdate(req.user._id, { name, about }, { new: 'true', runValidators: true })
+    .orFail()
+    .then((user) => {
+      res.status(httpConstants.HTTP_STATUS_OK).send(user);
+    })
+    .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        next(new BadRequestError(err.message));
+      } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        next (new NotFoundError ('Произошла ошибка. Пользователь с id не найден'));
+      } else {
+        next(err);
+      }
+    });
 };
 
-module.exports.editUserAvatar = (req, res) => {
-  if (req.user._id) {
+module.exports.editUserAvatar = (req, res, next) => {
     User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar }, { new: 'true', runValidators: true })
       .orFail()
-      .then((user) => res.send(user))
+      .then((user) => res.status(httpConstants.HTTP_STATUS_OK).send(user))
       .catch((err) => {
-        if (err.name === 'ValidationError') {
-          res.status(400).send({ message: err.message });
+        if (err instanceof mongoose.Error.ValidationError) {
+          next(new BadRequestError(err.message));
+        } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
+          next (new NotFoundError ('Произошла ошибка. Пользователь с id не найден'));
         } else {
-          res.status(500).send({ message: 'Произошла ошибка. Пользователь с id не найден' });
+          next(err);
         }
       });
-  } else {
-    res.status(500).send({ message: 'На сервере произошла ошибка' });
-  }
 };
