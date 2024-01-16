@@ -1,7 +1,7 @@
 const httpConstants = require('http2').constants;
 const mongoose = require('mongoose');
 const NotFoundError = require('../errors/NotFoundError');
-const BadRequestError = require('../errors/badRequestError');
+const BadRequestError = require('../errors/BadRequestError');
 const User = require('../models/user');
 
 module.exports.getUsers = (req, res, next) => {
@@ -67,7 +67,7 @@ module.exports.editUserData = (req, res, next) => {
 module.exports.editUserAvatar = (req, res, next) => {
     User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar }, { new: 'true', runValidators: true })
       .orFail()
-      .then((user) => res.status(httpConstants.HTTP_STATUS_OK).send(user))
+      .then((user) => res.status().send(user))
       .catch((err) => {
         if (err instanceof mongoose.Error.ValidationError) {
           next(new BadRequestError(err.message));
