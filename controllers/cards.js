@@ -1,6 +1,6 @@
-const Card = require('../models/card');
-const httpConstants = require('http2').constants;
 const mongoose = require('mongoose');
+const httpConstants = require('http2').constants;
+const Card = require('../models/card');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 
@@ -12,11 +12,11 @@ module.exports.addCard = (req, res, next) => {
         .populate('owner')
         .then((data) => res.status(httpConstants.HTTP_STATUS_CREATED).send(data))
         .catch((err) => {
-          if (err instanceof mongoose.Error.DocumentNotFoundError){
-            next (new NotFoundError (`Карточки с таким id нет`));
+          if (err instanceof mongoose.Error.DocumentNotFoundError) {
+            next(new NotFoundError('Карточки с таким id нет'));
           } else {
             next(err);
-          };
+          }
         });
     })
     .catch((err) => {
@@ -43,9 +43,9 @@ module.exports.deleteCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        next (new BadRequestError('Некорректный _id карточки - 400'));
+        next(new BadRequestError('Некорректный _id карточки - 400'));
       } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        next (new NotFoundError('Карточка с _id не найдена - 404'));
+        next(new NotFoundError('Карточка с _id не найдена - 404'));
       } else {
         next(err);
       }
@@ -61,9 +61,9 @@ module.exports.likeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        next (new BadRequestError('Некорректный _id карточки - 400'));
+        next(new BadRequestError('Некорректный _id карточки - 400'));
       } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        next (new NotFoundError ('Карточка с _id не найдена - 404'));
+        next(new NotFoundError('Карточка с _id не найдена - 404'));
       } else {
         next(err);
       }
@@ -79,9 +79,9 @@ module.exports.dislikeCard = (req, res, next) => {
     })
     .catch((err) => {
       if (err instanceof mongoose.Error.CastError) {
-        next (new BadRequestError('Некорректный _id карточки - 400'));
+        next(new BadRequestError('Некорректный _id карточки - 400'));
       } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        next (new NotFoundError ('Карточка с _id не найдена - 404'));
+        next(new NotFoundError('Карточка с _id не найдена - 404'));
       } else {
         next(err);
       }

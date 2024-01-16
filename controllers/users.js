@@ -20,7 +20,7 @@ module.exports.getUserById = (req, res, next) => {
       if (err instanceof mongoose.Error.CastError) {
         next(new BadRequestError(`Некорректный _id: ${req.params.userId}`)); // работает
       } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        next (new NotFoundError (`Пользователь по указанному _id: ${req.params.userId} не найден`));// меняю цифру 1 цифру (24 символа)
+        next(new NotFoundError(`Пользователь по указанному _id: ${req.params.userId} не найден`));// меняю цифру 1 цифру (24 символа)
       } else {
         next(err);
       }
@@ -34,9 +34,9 @@ module.exports.getUserById = (req, res, next) => {
 module.exports.addUser = (req, res, next) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-  .then((user) => {
-    res.status(httpConstants.HTTP_STATUS_CREATED).send(user);
-  })
+    .then((user) => {
+      res.status(httpConstants.HTTP_STATUS_CREATED).send(user);
+    })
     .catch((err) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError(err.message));
@@ -57,7 +57,7 @@ module.exports.editUserData = (req, res, next) => {
       if (err instanceof mongoose.Error.ValidationError) {
         next(new BadRequestError(err.message));
       } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
-        next (new NotFoundError ('Произошла ошибка. Пользователь с id не найден'));
+        next(new NotFoundError('Произошла ошибка. Пользователь с id не найден'));
       } else {
         next(err);
       }
@@ -65,16 +65,16 @@ module.exports.editUserData = (req, res, next) => {
 };
 
 module.exports.editUserAvatar = (req, res, next) => {
-    User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar }, { new: 'true', runValidators: true })
-      .orFail()
-      .then((user) => res.status().send(user))
-      .catch((err) => {
-        if (err instanceof mongoose.Error.ValidationError) {
-          next(new BadRequestError(err.message));
-        } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
-          next (new NotFoundError ('Произошла ошибка. Пользователь с id не найден'));
-        } else {
-          next(err);
-        }
-      });
+  User.findByIdAndUpdate(req.user._id, { avatar: req.body.avatar }, { new: 'true', runValidators: true })
+    .orFail()
+    .then((user) => res.status().send(user))
+    .catch((err) => {
+      if (err instanceof mongoose.Error.ValidationError) {
+        next(new BadRequestError(err.message));
+      } else if (err instanceof mongoose.Error.DocumentNotFoundError) {
+        next(new NotFoundError('Произошла ошибка. Пользователь с id не найден'));
+      } else {
+        next(err);
+      }
+    });
 };
