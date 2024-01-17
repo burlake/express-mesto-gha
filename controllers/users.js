@@ -1,7 +1,7 @@
 const httpConstants = require('http2').constants;
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-//const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/CoflictError');
@@ -68,14 +68,16 @@ module.exports.editUserAvatar = (req, res, next) => {
 };
 
 module.exports.addUser = (req, res, next) => {
-  const { name, about, avatar, email, password } = req.body;
+  const {
+    name, about, avatar, email, password,
+  } = req.body;
   bcrypt.hash(password, 10)
- // User.create({ name, about, avatar })
-    .then((hash) => User.create ({
+  // User.create({ name, about, avatar })
+    .then((hash) => User.create({
       name, about, avatar, email, password: hash,
-      //res.status(httpConstants.HTTP_STATUS_CREATED).send(user);
+      // res.status(httpConstants.HTTP_STATUS_CREATED).send(user);
     })
-      .then((user) => res.status(HTTP_STATUS_CREATED).send({ //201 - создан
+      .then((user) => res.status(httpConstants.HTTP_STATUS_CREATED).send({ // 201 - создан
         name: user.name, about: user.about, avatar: user.avatar, _id: user._id, email: user.email,
       }))
       .catch((err) => {
@@ -88,4 +90,3 @@ module.exports.addUser = (req, res, next) => {
         }
       }));
 };
-
