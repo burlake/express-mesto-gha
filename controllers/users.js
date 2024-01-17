@@ -1,7 +1,10 @@
 const httpConstants = require('http2').constants;
 const mongoose = require('mongoose');
+const bcrypt = require('bcryptjs');
+//const jwt = require('jsonwebtoken');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
+const ConflictError = require('../errors/CoflictError');
 const User = require('../models/user');
 
 module.exports.getUsers = (req, res, next) => {
@@ -30,21 +33,6 @@ module.exports.getUserById = (req, res, next) => {
 // orFail должен возвращать 404, то есть notFound,
 // CastError должен обрабатываться в catch и возвращать 400.
 // В случае если ошибка непредвиденная, надо возвращать 500
-
-module.exports.addUser = (req, res, next) => {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    .then((user) => {
-      res.status(httpConstants.HTTP_STATUS_CREATED).send(user);
-    })
-    .catch((err) => {
-      if (err instanceof mongoose.Error.ValidationError) {
-        next(new BadRequestError(err.message));
-      } else {
-        next(err);
-      }
-    });
-};
 
 module.exports.editUserData = (req, res, next) => {
   const { name, about } = req.body;
@@ -78,3 +66,26 @@ module.exports.editUserAvatar = (req, res, next) => {
       }
     });
 };
+
+module.exports.addUser = (req, res, next) => {
+  const { name, about, avatar, email, password } = req.body;
+  bcrypt.hash(password, 10)
+ // User.create({ name, about, avatar })
+    .then((hash) => User.create ({
+      name, about, avatar, email, password: hash,
+      //res.status(httpConstants.HTTP_STATUS_CREATED).send(user);
+    })
+      .then((user) => res.status(HTTP_STATUS_CREATED).send({ //201 - создан
+        name: user.name, about: user.about, avatar: user.avatar, _id: user._id, email: user.email,
+      }))
+      .catch((err) => {
+        if (err.code === 11000) {
+          next(new ConflictError('Пользователь с этой почтой уже зарегистрирован'));
+        } else if (err instanceof mongoose.Error.ValidationError) {
+          next(new BadRequestError(err.message));
+        } else {
+          next(err);
+        }
+      }));
+};
+
