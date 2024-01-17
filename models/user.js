@@ -1,18 +1,18 @@
 const mongoose = require('mongoose');
-const validator = require('validator');
+const validator = require('validator'); //не работает
 
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
     default: 'Жак-Ив Кусто',
     minlength: [2, 'Минимальная длинна 2 символа'],
-    maxlength: [30, 'Максимальная длинна 30 символ'],
+    maxlength: [30, 'Максимальная длинна 30 символов'],
   },
   about: {
     type: String,
     default: 'Исследователь',
     minlength: [2, 'Минимальная длинна 2 символа'],
-    maxlength: [30, 'Максимальная длинна 30 символ'],
+    maxlength: [30, 'Максимальная длинна 30 символов'],
   },
   avatar: {
     type: String,
@@ -26,11 +26,13 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    require: [true],
-    unique: [true],
+    required: [true, 'Поле нужно заполнить'],
+    unique: true, // не работает
+    index: true,
     validate: {
       validator(email) {
-        validator.isEmail(email);
+        // validator.isEmail(email);
+        return /^\S+@\S+\.\S+$/.test(email);
       },
       message: 'Введите корректный адрес электронной почты',
     },
@@ -38,9 +40,12 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
     require: [true],
-    unique: [true],
     select: false,
   },
 }, { versionKey: false, timestamps: true });
+
+// const user = mongoose.model("user", userSchema);
+// user.createIndexes();
+// module.exports = user;
 
 module.exports = mongoose.model('user', userSchema);
