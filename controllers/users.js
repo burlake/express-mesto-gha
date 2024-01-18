@@ -81,7 +81,7 @@ module.exports.addUser = (req, res, next) => {
         name: user.name, about: user.about, avatar: user.avatar, _id: user._id, email: user.email,
       }))
       .catch((err) => {
-        if ((err.name === "MongoError" && err.code === 11000)) {
+        if ((err.name === 'MongoError' && err.code === 11000)) {
           next(new ConflictError(`Пользователь с этой почтой ${email} уже зарегистрирован`)); // не работает
         } else if (err instanceof mongoose.Error.ValidationError) {
           next(new BadRequestError(err.message));

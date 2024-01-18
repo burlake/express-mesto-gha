@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const validator = require('validator'); //не работает
+// const validator = require('validator'); //don't work
 
 const userSchema = new mongoose.Schema({
   name: {
@@ -28,7 +28,6 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Поле нужно заполнить'],
     unique: true, // не работает
-    index: true,
     validate: {
       validator(email) {
         // validator.isEmail(email);
