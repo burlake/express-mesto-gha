@@ -6,6 +6,7 @@ const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/ConflictError');
+const { log } = require('console');
 
 
 module.exports.getUsers = (req, res, next) => {
@@ -100,6 +101,7 @@ module.exports.login = (req, res, next) => {
       res.status(200).send({ token });
     })
     .catch((err) => {
+      console.log("err", err)
       next(err);
     });
 };
