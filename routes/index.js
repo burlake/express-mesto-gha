@@ -1,13 +1,10 @@
 const router = require('express').Router();
-
-const usersRouter = require('./users'); // ПРОВЕРИТЬ ОШИБКУ С ПУТЯМИ к ФАЙЛУ
-const cardsRouter = require('./cards'); // ПРОВЕРИТЬ ОШИБКУ С ПУТЯМИ к ФАЙЛУ
-
+const usersRouter = require('./users');
+const cardsRouter = require('./cards');
 const signupRouter = require('./signup');
 
-router.use('./signup.js', signupRouter); // ПРОВЕРИТЬ ОШИБКУ С ПУТЯМИ к ФАЙЛУ
-router.use('./users.js', usersRouter); // ПРОВЕРИТЬ ОШИБКУ С ПУТЯМИ к ФАЙЛУ
-router.use('./cards.js', cardsRouter); // ПРОВЕРИТЬ ОШИБКУ С ПУТЯМИ к ФАЙЛУ
-
+router.use('/signup', signupRouter);
+router.use('/users', usersRouter);
+router.use('/cards', cardsRouter);
 
 module.exports = router;
