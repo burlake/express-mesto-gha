@@ -101,7 +101,6 @@ module.exports.login = (req, res, next) => {
       res.status(200).send({ token });
     })
     .catch((err) => {
-      console.log("err", err)
       next(err);
     });
 };
