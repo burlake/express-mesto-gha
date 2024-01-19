@@ -2,10 +2,11 @@ const httpConstants = require('http2').constants;
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 // const jwt = require('jsonwebtoken');
+const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/ConflictError');
-const User = require('../models/user');
+
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
@@ -81,7 +82,7 @@ module.exports.addUser = (req, res, next) => {
         name: user.name, about: user.about, avatar: user.avatar, _id: user._id, email: user.email,
       }))
       .catch((err) => {
-        if ((err.name === 'MongoError' && err.code === 11000)) {
+        if ((err.code === 11000)) {
           next(new ConflictError(`Пользователь с этой почтой ${email} уже зарегистрирован`)); // не работает
         } else if (err instanceof mongoose.Error.ValidationError) {
           next(new BadRequestError(err.message));

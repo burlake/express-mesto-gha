@@ -27,13 +27,13 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: [true, 'Поле нужно заполнить'],
-    unique: true, // не работает
+    unique: true, // не произошла ошибка на сервере
     validate: {
       validator(email) {
         // validator.isEmail(email);
         return /^\S+@\S+\.\S+$/.test(email);
       },
-      message: 'Введите корректный адрес электронной почты',
+      message: 'Введите корректный адрес электронной почты', //работает
     },
   },
   password: {
