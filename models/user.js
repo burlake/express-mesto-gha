@@ -35,7 +35,7 @@ const userSchema = new mongoose.Schema({
         // validator.isEmail(email);
         return /^\S+@\S+\.\S+$/.test(email);
       },
-      message: 'Введите корректный адрес электронной почты', //работает
+      message: 'Введите корректный адрес электронной почты', // работает
     },
   },
   password: {
@@ -45,12 +45,12 @@ const userSchema = new mongoose.Schema({
   },
 }, { versionKey: false, timestamps: true });
 
-userSchema.statics.findUserByCredentials = function findUserByCredentials (email, password) {
+userSchema.statics.findUserByCredentials = function findUserByCredentials(email, password) {
   return this.findOne({ email })
-  .select('+password')
-  .then((user) => {
+    .select('+password')
+    .then((user) => {
       if (!user) {
-        throw new UnautorizedError ('Неправильные почта или пароль');
+        throw new UnautorizedError('Неправильные почта или пароль');
       }
 
       return bcrypt.compare(password, user.password)
@@ -63,8 +63,6 @@ userSchema.statics.findUserByCredentials = function findUserByCredentials (email
         });
     });
 };
-
-
 
 // const user = mongoose.model("user", userSchema);
 // user.createIndexes();
