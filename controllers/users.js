@@ -1,7 +1,7 @@
 const httpConstants = require('http2').constants;
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-// const jwt = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 const NotFoundError = require('../errors/NotFoundError');
 const BadRequestError = require('../errors/BadRequestError');
@@ -83,7 +83,7 @@ module.exports.addUser = (req, res, next) => {
       }))
       .catch((err) => {
         if ((err.code === 11000)) {
-          next(new ConflictError(`Пользователь с этой почтой ${email} уже зарегистрирован`)); // не работает
+          next(new ConflictError(`Пользователь с этой почтой ${email} уже зарегистрирован`));
         } else if (err instanceof mongoose.Error.ValidationError) {
           next(new BadRequestError(err.message));
         } else {
@@ -91,3 +91,16 @@ module.exports.addUser = (req, res, next) => {
         }
       }));
 };
+
+module.exports.login = (req, res, next) => {
+  const { email, password } = req.body;
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'some-secret-key', { expiresIn: '7d' });
+      res.status(200).send({ token });
+    })
+    .catch((err) => {
+      next(err);
+    });
+};
+

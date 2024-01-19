@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
-const router = require('./routes/users');
+const router = require('./routes/index');
 
 const { PORT = 3000, DB_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
 
@@ -29,6 +29,8 @@ app.use((req, res, next) => {
 
 app.use('/users', require('./routes/users'));
 app.use('/cards', require('./routes/cards'));
+app.use('/signup', require('./routes/signup'));
+app.use('/signin', require('./routes/signin'));
 
 app.use('*', (req, res) => {
   res.status(404).send({ message: 'Страницы нет' });
