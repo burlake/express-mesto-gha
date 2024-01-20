@@ -3,8 +3,8 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const router = require('./routes/index');
 const { errors } = require('celebrate');
+const router = require('./routes/index');
 // const auth = require('./middlewares/auth');
 
 const { PORT = 3000, DB_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.env;
@@ -12,7 +12,7 @@ const { PORT = 3000, DB_URL = 'mongodb://127.0.0.1:27017/mestodb' } = process.en
 const app = express();
 
 const limiter = rateLimit({
-  windowMS:15 * 60 * 1000,
+  windowMS: 15 * 60 * 1000,
   max: 100,
 });
 app.use(limiter);
