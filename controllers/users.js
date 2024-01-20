@@ -9,7 +9,7 @@ const ConflictError = require('../errors/ConflictError');
 
 module.exports.getUsers = (req, res, next) => {
   User.find({})
-    .then((users) => res.status(httpConstants.HTTP_STATUS_OK).send(users))
+    .then((users) => res.send({ data: users }))
     .catch(next);
 };
 
