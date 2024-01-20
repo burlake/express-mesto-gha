@@ -105,6 +105,6 @@ module.exports.login = (req, res, next) => {
 
 module.exports.getUserMe = (req, res, next) => {
   User.findById(req.user._id)
-    .then((user) => res.status(HTTP_STATUS_OK).send(user))
+    .then((user) => res.status(httpConstants.HTTP_STATUS_OK).send(user))
     .catch(next);
 };

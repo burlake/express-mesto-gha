@@ -4,7 +4,7 @@ const {
 } = require('../controllers/users');
 
 router.get('/', getUsers);
-router.get('/me', getUserMe); //GET /users/me - возвращает информацию о текущем пользователе
+router.get('/me', getUserMe); // GET /users/me - возвращает информацию о текущем пользователе
 
 router.get('/:userId', getUserById);
 router.patch('/me', editUserData);
