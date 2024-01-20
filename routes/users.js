@@ -1,11 +1,12 @@
 const router = require('express').Router();
 const {
-  getUsers, getUserById, editUserData, editUserAvatar,
+  getUsers, getUserMe, getUserById, editUserData, editUserAvatar,
 } = require('../controllers/users');
 
 router.get('/', getUsers);
-router.get('/:userId', getUserById);
+router.get('/me', getUserMe); //GET /users/me - возвращает информацию о текущем пользователе
 
+router.get('/:userId', getUserById);
 router.patch('/me', editUserData);
 router.patch('/me/avatar', editUserAvatar);
 
