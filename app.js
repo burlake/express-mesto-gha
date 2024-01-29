@@ -5,6 +5,7 @@ const helmet = require('helmet');
 const { errors } = require('celebrate');
 const router = require('./routes/index');
 const ErrorHandler = require('./middlewares/error-handler');
+const {requestLogger, errorLogger} = require('./middlewares/logger');
 const { limiter } = require('./utils/constants');
 // const auth = require('./middlewares/auth');
 const cors = require('cors')
@@ -33,6 +34,8 @@ mongoose.connect(DB_URL, {
   useUnifiedTopology: true,
 });
 
+app.use(requestLogger);
+
 app.use('/', require('./routes/index'));
 
 // app.use('/users', require('./routes/users'));
@@ -40,6 +43,8 @@ app.use('/', require('./routes/index'));
 // app.use('/signup', require('./routes/signup'));
 // app.use('/signin', require('./routes/signin'));
 // app.use(auth);
+
+app.use(errorLogger);
 
 app.use(errors());
 
