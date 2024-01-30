@@ -3,6 +3,8 @@ const UnauthorizedError = require('../errors/UnauthorizedError');
 
 const { SECRET_KEY = 'some-secret-key' } = process.env;
 
+console.log(SECRET_KEY);
+
 module.exports = (req, res, next) => {
   const { authorization } = req.headers;
 
